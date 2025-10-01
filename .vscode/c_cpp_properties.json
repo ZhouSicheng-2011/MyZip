@@ -4,8 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "E:\\Python\\Lib\\site-packages\\pybind11\\include\\pybind11",
-                "E:/Python/Lib/site-packages/pybind11/include"
+                "E:\\Python\\Lib\\site-packages\\pybind11\\include\\pybind11\\**",
+                "E:/Python/Lib/site-packages/pybind11/include/**"
             ],
             "defines": [
                 "_DEBUG",
