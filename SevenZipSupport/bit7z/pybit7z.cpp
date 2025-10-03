@@ -552,7 +552,7 @@ PYBIND11_MODULE(pybit7z, m) {
              py::arg("password") = "");
     
     // PyZipFile 类绑定 - 类似Python zipfile接口
-    py::class_<PyZipFile>(m, "ZipFile")
+    py::class_<PyZipFile>(m, "SevenZipFile")
         .def(py::init<const std::string&, const std::string&, const std::string&, int, const std::string&>(),
              py::arg("filename"),
              py::arg("mode") = "r",
