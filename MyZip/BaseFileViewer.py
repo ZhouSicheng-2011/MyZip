@@ -10,16 +10,30 @@ class BaseFileViewer(abc.ABC):
     def __init__(self, parent):
         self.frame = ttk.Frame(parent)
         self.setup_ui()
+
         self.archive = ''
         self.fn_list = []
         self.dn_set = set()
         self.fp_info = dict()
+        self.last_dir = ''
+
         self.folder_icon = picture.FOLDER_PNG
         self.file_icon = picture.FILE_PNG
+        self.last_icon = picture.LAST_PNG
     
     def setup_ui(self):
         #创建父目录显示
         self.parent_dir_area = ttk.Frame(self.frame)
+        self.parent_dir_area.grid(column=0, columnspan=2, row=0, sticky='ew')
+        #创建上一级目录按钮
+        self.last_btn = ttk.Button(self.parent_dir_area, image=self.last_icon)
+        self.last_btn.grid(column=0, row=0)
+        #创建当前目录显示
+        self.now_dir = tk.StringVar(value='')
+        self.now_dir_label = ttk.Label(self.parent_dir_area, textvariable=self.now_dir, width=80)
+        self.now_dir_label.grid(column=1, row=0)
+        ##
+        ##
         #创建表格
         self.file_table = ttk.Treeview(self.frame, columns=('文件名', '压缩前大小', '压缩后大小',\
                                                             '压缩率', '修改日期', 'CRC32校验值',\
@@ -54,6 +68,7 @@ class BaseFileViewer(abc.ABC):
         #设置加载进度条
         self.load_progress_bar = ttk.Progressbar(self.status_area, mode='determinate')
         self.load_progress_bar.grid(column=1, row=0)
+        ...
 
     @abc.abstractmethod
     def analysis_archive(self) -> tuple[list[str], set[str], dict[str, tuple]]:
@@ -64,14 +79,22 @@ class BaseFileViewer(abc.ABC):
         pass
 
     def open(self, archive_path:str):
-        '''用于打开压缩文件并设置UI显示'''
+        '''用于打开压缩文件并设置初始UI显示'''
         self.archive = archive_path
+        self.status_var.set('正在解析文件...')
         data = self.analysis_archive()
         self.fn_list = data[0]
         self.dn_set = data[1]
         self.fp_info = data[2]
 
-    def show_update(self, dirs:list[tuple[str]], files:list[tuple[str]]):
+        self.status_var.set('正在初始化文件显示...')        
+        initial_files, initial_dirs = self.find_fd_in_one_dir('')
+        ifwi = [(f,)+self.fp_info.get(f, tuple()) for f in initial_files] #ifwi是initial file with information的缩写
+        idwi = [(d,)+self.fp_info.get(d, tuple()) for d in initial_dirs] #idwi是initial directory with information的缩写
+        
+        self.show_update(idwi, ifwi, '')
+
+    def show_update(self, dirs:list[tuple[str]], files:list[tuple[str]], now_dir:str):
         '''用于刷新表格显示, 参数:
             dirs: 所有目录信息的元组
             files: 所有文件信息的元组'''
@@ -85,3 +108,15 @@ class BaseFileViewer(abc.ABC):
         
         for f in files:
             self.file_table.insert("", "end", values=f, image=self.file_icon)
+
+        self.now_dir.set(now_dir)
+
+    def last(self):
+        pass
+
+    def find_fd_in_one_dir(self, target_dir:str):
+        '''寻找在压缩文件里在同一个目录下的文件和目录'''
+        num = target_dir.count('/')
+        files = [k for k in self.fn_list if k.startswith(target_dir) and k.count('/')==num]
+        dirs = [p for p in self.dn_set if p.startswith(target_dir) and p.count('/')==num+1]
+        return tuple(files), tuple(dirs)
