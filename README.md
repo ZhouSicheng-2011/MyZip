@@ -4,11 +4,11 @@ My open source compression software
 ## Support formats
 At present, this project **is still developing**, but we plan to support these **formats**:
 
-    `ZIP`, `TAR`, `TGZ`, `TBZ2`, `TXZ`, `TZST`, `GZ`, `BZ2`, `XZ`, `ZST`;(Python internal support)
+`ZIP`, `TAR`, `TGZ`, `TBZ2`, `TXZ`, `TZST`, `GZ`, `BZ2`, `XZ`, `ZST`;(Python internal support)
 
-    `RAR`, `ISO`;(External libraries)
+`RAR`, `ISO`;(External libraries)
 
-    `7Z`.(My code)
+`7Z`.(My code)
 
 ## Development
 ### bit7z documents
