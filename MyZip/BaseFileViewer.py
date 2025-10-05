@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-import ttkthemes
 
 import abc
 
@@ -27,7 +26,7 @@ class BaseFileViewer(abc.ABC):
         self.parent_dir_area = ttk.Frame(self.frame)
         self.parent_dir_area.grid(column=0, columnspan=2, row=0, sticky='ew')
         #创建上一级目录按钮
-        self.last_btn = ttk.Button(self.parent_dir_area, image=self.last_icon)
+        self.last_btn = ttk.Button(self.parent_dir_area, image=self.last_icon, command=self.last)
         self.last_btn.grid(column=0, row=0)
         #创建当前目录显示
         self.now_dir = tk.StringVar(value='')
@@ -40,7 +39,7 @@ class BaseFileViewer(abc.ABC):
                                                             '压缩率', '修改日期', 'CRC32校验值',\
                                                             '压缩方式/算法'),\
                                                             show='headings')
-        self.file_table.column('文件名', width=500, anchor='w')
+        self.file_table.column('文件名/目录名', width=500, anchor='w')
         self.file_table.column('压缩前大小', width=80, anchor='center')
         self.file_table.column('压缩后大小', width=80, anchor='center')
         self.file_table.column('压缩率', width=60, anchor='center')
@@ -99,8 +98,8 @@ class BaseFileViewer(abc.ABC):
 
     def show_update(self, dirs:list[tuple[str]], files:list[tuple[str]], now_dir:str):
         '''用于刷新表格显示, 参数:
-            dirs: 所有目录信息的元组
-            files: 所有文件信息的元组'''
+            dirs: 包含所有目录信息的元组组成的列表
+            files: 包含所有文件信息的元组组成的列表'''
         try:
             self.file_table.delete(*self.file_table.get_children())
         except:
